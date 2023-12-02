@@ -1,0 +1,101 @@
+//CONTACT BOOK//
+
+import json
+
+CONTACT_BOOK_FILE = "contact_book.json"
+
+def load_contact_book():
+    try:
+        with open(CONTACT_BOOK_FILE, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+def save_contact_book(contacts):
+    with open(CONTACT_BOOK_FILE, 'w') as file:
+        json.dump(contacts, file, indent=2)
+
+def add_contact(name, phone, email):
+    contacts = load_contact_book()
+    contacts.append({"name": name, "phone": phone, "email": email})
+    save_contact_book(contacts)
+
+def view_contacts():
+    contacts = load_contact_book()
+    if contacts:
+        for idx, contact in enumerate(contacts, start=1):
+            print(f"{idx}. {contact['name']} - {contact['phone']} - {contact['email']}")
+    else:
+        print("No contacts available.")
+
+def search_contact(query):
+    contacts = load_contact_book()
+    results = [contact for contact in contacts if query.lower() in contact['name'].lower()]
+    if results:
+        for idx, result in enumerate(results, start=1):
+            print(f"{idx}. {result['name']} - {result['phone']} - {result['email']}")
+    else:
+        print("No matching contacts found.")
+
+def update_contact(index, name, phone, email):
+    contacts = load_contact_book()
+    if 1 <= index <= len(contacts):
+        contacts[index - 1] = {"name": name, "phone": phone, "email": email}
+        save_contact_book(contacts)
+        print("Contact updated successfully.")
+    else:
+        print("Invalid contact index.")
+
+def delete_contact(index):
+    contacts = load_contact_book()
+    if 1 <= index <= len(contacts):
+        del contacts[index - 1]
+        save_contact_book(contacts)
+        print("Contact deleted successfully.")
+    else:
+        print("Invalid contact index.")
+
+# User interface
+while True:
+    print("\nContact Book Menu:")
+    print("1. Add Contact")
+    print("2. View Contacts")
+    print("3. Search Contact")
+    print("4. Update Contact")
+    print("5. Delete Contact")
+    print("6. Exit")
+
+    choice = input("Enter your choice (1-6): ")
+
+    if choice == '1':
+        name = input("Enter contact name: ")
+        phone = input("Enter contact phone number: ")
+        email = input("Enter contact email: ")
+        add_contact(name, phone, email)
+
+    elif choice == '2':
+        view_contacts()
+
+    elif choice == '3':
+        query = input("Enter search query: ")
+        search_contact(query)
+
+    elif choice == '4':
+        view_contacts()
+        index = int(input("Enter the index of the contact to update: "))
+        name = input("Enter new contact name: ")
+        phone = input("Enter new contact phone number: ")
+        email = input("Enter new contact email: ")
+        update_contact(index, name, phone, email)
+
+    elif choice == '5':
+        view_contacts()
+        index = int(input("Enter the index of the contact to delete: "))
+        delete_contact(index)
+
+    elif choice == '6':
+        print("Exiting Contact Book. Goodbye!")
+        break
+
+    else:
+        print("Invalid choice. Please enter a number between 1 and 6.")
